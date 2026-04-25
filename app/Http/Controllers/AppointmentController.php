@@ -70,9 +70,9 @@ class AppointmentController extends Controller
 
     public function create()
     {
-        $doctors = User::doctors()->get();
-        $services = Service::active()->get();
-        $patients = User::patients()->get();
+        $doctors = User::doctors()->orderBy('name')->get();
+        $services = Service::active()->orderBy('name')->get();
+        $patients = User::patients()->orderBy('name')->get();
 
         return view('appointments.create', compact('doctors', 'services', 'patients'));
     }
@@ -82,7 +82,7 @@ class AppointmentController extends Controller
         $user = Auth::user();
         $validated = $this->validateAppointment($request, $user);
 
-        $appointment = Appointment::create([
+        Appointment::create([
             'patient_id' => $this->resolvePatientId($request, $user),
             'doctor_id' => $validated['doctor_id'],
             'service_id' => $validated['service_id'],

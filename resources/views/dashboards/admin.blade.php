@@ -33,9 +33,17 @@
         </dl>
 
         <div class="mt-8">
-            <a href="{{ route('appointments.index') }}" class="inline-flex rounded-md bg-rose-700 px-4 py-2 text-sm font-medium text-white hover:bg-rose-600">
-                Administrer les rendez-vous
-            </a>
+            <div class="flex flex-wrap gap-3">
+                <a href="{{ route('appointments.index') }}" class="inline-flex rounded-md bg-rose-700 px-4 py-2 text-sm font-medium text-white hover:bg-rose-600">
+                    Administrer les rendez-vous
+                </a>
+                <a href="{{ route('admin.users.index', \App\Models\User::ROLE_PATIENT) }}" class="inline-flex rounded-md bg-sky-700 px-4 py-2 text-sm font-medium text-white hover:bg-sky-600">
+                    Gerer les patients
+                </a>
+                <a href="{{ route('admin.users.index', \App\Models\User::ROLE_DOCTOR) }}" class="inline-flex rounded-md bg-emerald-700 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-600">
+                    Gerer les medecins
+                </a>
+            </div>
         </div>
     </section>
 @endsection
