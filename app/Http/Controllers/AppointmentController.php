@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\AppointmentConfirmedMail;
 use App\Models\Appointment;
 use App\Models\Service;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rule;
 
 class AppointmentController extends Controller
@@ -14,6 +16,9 @@ class AppointmentController extends Controller
     public function index(Request $request)
     {
         $user = Auth::user();
+        $doctors = User::doctors()->orderBy('name')->get();
+        $services = Service::active()->orderBy('name')->get();
+        $patients = User::patients()->orderBy('name')->get();
 
         $query = Appointment::with(['patient', 'doctor', 'service'])
             ->when(! $user->isAdmin(), function ($builder) use ($user) {
@@ -65,16 +70,28 @@ class AppointmentController extends Controller
             'today' => (clone $statsQuery)->whereDate('appointment_date', today())->count(),
         ];
 
-        return view('appointments.index', compact('appointments', 'stats'));
+        $editingAppointment = null;
+
+        if ($request->string('modal')->value() === 'edit' && $request->filled('appointment') && ! $user->isPatient()) {
+            $editingAppointment = Appointment::with(['patient', 'doctor', 'service'])
+                ->findOrFail($request->integer('appointment'));
+
+            $this->ensureUserCanAccess($editingAppointment);
+        }
+
+        return view('appointments.index', compact(
+            'appointments',
+            'stats',
+            'doctors',
+            'services',
+            'patients',
+            'editingAppointment',
+        ));
     }
 
     public function create()
     {
-        $doctors = User::doctors()->orderBy('name')->get();
-        $services = Service::active()->orderBy('name')->get();
-        $patients = User::patients()->orderBy('name')->get();
-
-        return view('appointments.create', compact('doctors', 'services', 'patients'));
+        return redirect()->route('appointments.index', ['modal' => 'create']);
     }
 
     public function store(Request $request)
@@ -88,24 +105,24 @@ class AppointmentController extends Controller
             'service_id' => $validated['service_id'],
             'appointment_date' => $validated['date'],
             'appointment_time' => $validated['time'],
-            'status' => $validated['status'],
+            'status' => $this->resolveStatus($validated, $user),
             'notes' => $validated['notes'] ?? null,
         ]);
 
         return redirect()
             ->route('appointments.index')
-            ->with('success', 'Rendez-vous cree avec succes.');
+            ->with('success', __('Rendez-vous cree avec succes.'));
     }
 
     public function edit(Appointment $appointment)
     {
         $this->ensureUserCanAccess($appointment);
+        abort_if(Auth::user()->isPatient(), 403);
 
-        $doctors = User::doctors()->orderBy('name')->get();
-        $services = Service::active()->orderBy('name')->get();
-        $patients = User::patients()->orderBy('name')->get();
-
-        return view('appointments.edit', compact('appointment', 'doctors', 'services', 'patients'));
+        return redirect()->route('appointments.index', [
+            'modal' => 'edit',
+            'appointment' => $appointment->id,
+        ]);
     }
 
     public function update(Request $request, Appointment $appointment)
@@ -113,7 +130,13 @@ class AppointmentController extends Controller
         $this->ensureUserCanAccess($appointment);
 
         $user = Auth::user();
+        abort_if($user->isPatient(), 403);
+
         $validated = $this->validateAppointment($request, $user, $appointment);
+        $newStatus = $this->resolveStatus($validated, $user, $appointment);
+        $shouldSendConfirmation = $appointment->status !== 'confirmed'
+            && $newStatus === 'confirmed'
+            && ! $appointment->email_sent;
 
         $appointment->update([
             'patient_id' => $this->resolvePatientId($request, $user, $appointment),
@@ -121,13 +144,19 @@ class AppointmentController extends Controller
             'service_id' => $validated['service_id'],
             'appointment_date' => $validated['date'],
             'appointment_time' => $validated['time'],
-            'status' => $validated['status'],
+            'status' => $newStatus,
             'notes' => $validated['notes'] ?? null,
         ]);
 
+        if ($shouldSendConfirmation) {
+            $appointment->loadMissing(['patient', 'doctor', 'service']);
+            Mail::to($appointment->patient->email)->send(new AppointmentConfirmedMail($appointment));
+            $appointment->update(['email_sent' => true]);
+        }
+
         return redirect()
             ->route('appointments.index')
-            ->with('success', 'Rendez-vous modifie avec succes.');
+            ->with('success', __('Rendez-vous modifie avec succes.'));
     }
 
     public function destroy(Appointment $appointment)
@@ -139,14 +168,14 @@ class AppointmentController extends Controller
 
             return redirect()
                 ->route('appointments.index')
-                ->with('success', 'Le rendez-vous a ete annule.');
+                ->with('success', __('Le rendez-vous a ete annule.'));
         }
 
         $appointment->delete();
 
         return redirect()
             ->route('appointments.index')
-            ->with('success', 'Rendez-vous supprime avec succes.');
+            ->with('success', __('Rendez-vous supprime avec succes.'));
     }
 
     public function cancel(Appointment $appointment)
@@ -159,7 +188,31 @@ class AppointmentController extends Controller
 
         return redirect()
             ->route('appointments.index')
-            ->with('success', 'Le rendez-vous a ete annule.');
+            ->with('success', __('Le rendez-vous a ete annule.'));
+    }
+
+    public function confirm(Appointment $appointment)
+    {
+        $this->ensureUserCanAccess($appointment);
+
+        $user = Auth::user();
+        abort_if($user->isPatient(), 403);
+
+        $shouldSendConfirmation = $appointment->status !== 'confirmed' && ! $appointment->email_sent;
+
+        $appointment->update([
+            'status' => 'confirmed',
+        ]);
+
+        if ($shouldSendConfirmation) {
+            $appointment->loadMissing(['patient', 'doctor', 'service']);
+            Mail::to($appointment->patient->email)->send(new AppointmentConfirmedMail($appointment));
+            $appointment->update(['email_sent' => true]);
+        }
+
+        return redirect()
+            ->route('appointments.index')
+            ->with('success', __('Le rendez-vous a ete confirme.'));
     }
 
     protected function validateAppointment(Request $request, User $user, ?Appointment $appointment = null): array
@@ -185,6 +238,15 @@ class AppointmentController extends Controller
             'status' => ['required', Rule::in($statuses)],
             'notes' => ['nullable', 'string', 'max:1000'],
         ]);
+    }
+
+    protected function resolveStatus(array $validated, User $user, ?Appointment $appointment = null): string
+    {
+        if ($user->isPatient()) {
+            return $appointment?->status ?? 'pending';
+        }
+
+        return $validated['status'];
     }
 
     protected function resolvePatientId(Request $request, User $user, ?Appointment $appointment = null): int

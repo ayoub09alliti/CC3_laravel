@@ -1,58 +1,211 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# CC3 Laravel
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Application Laravel de gestion medicale avec authentification, gestion des utilisateurs par role et gestion des rendez-vous.
 
-## About Laravel
+## Installation du projet
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+### Prerequis
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- PHP 8.2 ou plus
+- Composer
+- Node.js et npm
+- MySQL ou MariaDB
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### Etapes d'installation
 
-## Learning Laravel
-
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+1. Cloner le projet puis entrer dans le dossier:
 
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+git clone https://github.com/ayoub09alliti/CC3_laravel.git
+cd CC3_laravel
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+2. Installer les dependances PHP:
 
-## Contributing
+```bash
+composer install
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+3. Installer les dependances front:
 
-## Code of Conduct
+```bash
+npm install
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+4. Copier le fichier d'environnement:
 
-## Security Vulnerabilities
+```bash
+cp .env.example .env
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Sous Windows PowerShell, si `cp` ne fonctionne pas:
 
-## License
+```powershell
+Copy-Item .env.example .env
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+5. Configurer la base de donnees dans le fichier `.env`:
+
+```env
+APP_NAME="CC3 Laravel"
+APP_ENV=local
+APP_KEY=
+APP_DEBUG=true
+APP_URL=http://127.0.0.1:8000
+
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=cc3_laravel
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+6. Generer la cle de l'application:
+
+```bash
+php artisan key:generate
+```
+
+7. Executer les migrations et les seeders:
+
+```bash
+php artisan migrate --seed
+```
+
+8. Lancer le serveur Vite:
+
+```bash
+npm run dev
+```
+
+9. Lancer le serveur Laravel:
+
+```bash
+php artisan serve
+```
+
+10. Ouvrir l'application:
+
+```text
+http://127.0.0.1:8000
+```
+
+## Configuration email
+
+Par defaut, Laravel utilise ici le mailer `log` si rien n'est configure. Pour envoyer de vrais emails lors de la confirmation d'un rendez-vous, renseigner les variables SMTP dans `.env`, par exemple:
+
+```env
+MAIL_MAILER=smtp
+MAIL_HOST=127.0.0.1
+MAIL_PORT=1025
+MAIL_USERNAME=null
+MAIL_PASSWORD=null
+MAIL_ENCRYPTION=null
+MAIL_FROM_ADDRESS="no-reply@example.com"
+MAIL_FROM_NAME="${APP_NAME}"
+```
+
+## Identifiants de connexion par defaut
+
+Ces comptes sont crees par `php artisan migrate --seed`.
+
+### Admin
+
+- Email: `admin@medicab.ma`
+- Mot de passe: `password`
+
+### Medecins
+
+- `dr.martin@medicab.ma` / `password`
+- `dr.benali@medicab.ma` / `password`
+- `dr.zahra@medicab.ma` / `password`
+- `dr.tazi@medicab.ma` / `password`
+
+### Patient de test
+
+- Email: `patient@medicab.ma`
+- Mot de passe: `password`
+
+D'autres patients de demonstration sont aussi injectes par le seeder.
+
+## Documentation des endpoints
+
+Note importante: le projet ne contient pas d'API REST JSON dediee dans `routes/api.php` a ce stade. Les endpoints ci-dessous sont les endpoints HTTP/web actuellement implementes.
+
+### Authentification
+
+- `GET /login`
+  - Affiche le formulaire de connexion.
+- `POST /login`
+  - Authentifie un utilisateur.
+- `GET /register`
+  - Affiche le formulaire d'inscription.
+- `POST /register`
+  - Cree un nouveau compte utilisateur.
+- `POST /logout`
+  - Deconnecte l'utilisateur connecte.
+
+### Dashboard
+
+- `GET /dashboard`
+  - Redirige vers le dashboard correspondant au role.
+- `GET /patient/dashboard`
+  - Dashboard patient.
+- `GET /doctor/dashboard`
+  - Dashboard medecin.
+- `GET /admin/dashboard`
+  - Dashboard administrateur.
+
+### Rendez-vous
+
+- `GET /appointments`
+  - Liste les rendez-vous visibles pour l'utilisateur courant.
+- `GET /appointments/create`
+  - Redirige vers la liste avec ouverture de la modale de creation.
+- `POST /appointments`
+  - Cree un rendez-vous.
+  - Pour un patient, le statut est force a `pending`.
+- `GET /appointments/{appointment}/edit`
+  - Redirige vers la liste avec ouverture de la modale de modification.
+- `PUT /appointments/{appointment}`
+  - Met a jour un rendez-vous.
+  - Si le statut passe a `confirmed` par un admin ou un medecin, un email est envoye au patient.
+- `PATCH /appointments/{appointment}/confirm`
+  - Confirme rapidement un rendez-vous depuis la liste.
+- `PATCH /appointments/{appointment}/cancel`
+  - Annule un rendez-vous.
+- `DELETE /appointments/{appointment}`
+  - Supprime un rendez-vous pour l'admin.
+  - Pour un utilisateur non admin, cette action annule le rendez-vous.
+
+### Gestion admin des utilisateurs
+
+#### Patients
+
+- `GET /admin/users/patient`
+  - Liste des patients.
+- `POST /admin/users/patient`
+  - Creation d'un patient.
+- `PUT /admin/users/patient/{user}`
+  - Modification d'un patient.
+- `DELETE /admin/users/patient/{user}`
+  - Suppression d'un patient.
+
+#### Medecins
+
+- `GET /admin/users/doctor`
+  - Liste des medecins.
+- `POST /admin/users/doctor`
+  - Creation d'un medecin.
+- `PUT /admin/users/doctor/{user}`
+  - Modification d'un medecin.
+- `DELETE /admin/users/doctor/{user}`
+  - Suppression d'un medecin.
+
+## Remarques fonctionnelles
+
+- Les patients ne peuvent pas modifier un rendez-vous existant.
+- Les patients creent leurs rendez-vous avec le statut `pending`.
+- Les admins et medecins peuvent confirmer un rendez-vous directement depuis la liste.
+- La creation et la modification des rendez-vous se font via des fenetres modales.

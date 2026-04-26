@@ -17,7 +17,7 @@ class RoleMiddleware
         }
 
         if (! in_array($user->role, $roles, true)) {
-            abort(Response::HTTP_FORBIDDEN, 'Acces non autorise pour ce role.');
+            abort(Response::HTTP_FORBIDDEN, __('Acces non autorise pour ce role.'));
         }
 
         return $next($request);

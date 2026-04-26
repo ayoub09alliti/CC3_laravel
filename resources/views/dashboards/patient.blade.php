@@ -1,40 +1,37 @@
-@extends('layouts.app', ['title' => 'Dashboard Patient'])
+@extends('layouts.app', ['title' => __('Tableau de bord patient')])
 
 @section('content')
     <section class="mx-auto max-w-4xl rounded-lg bg-white p-8 shadow-sm ring-1 ring-slate-200">
         <div class="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
             <div>
-                <p class="text-sm font-medium uppercase tracking-wide text-sky-700">Patient</p>
-                <h1 class="mt-2 text-3xl font-semibold">Bienvenue {{ auth()->user()->name }}</h1>
-                <p class="mt-3 text-slate-600">Votre espace patient est protege par le middleware de role.</p>
+                <p class="text-sm font-medium uppercase tracking-wide text-sky-700">{{ __('Patient') }}</p>
+                <h1 class="mt-2 text-3xl font-semibold">{{ __('Bienvenue :name', ['name' => auth()->user()->name]) }}</h1>
+
             </div>
 
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
                 <button type="submit" class="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700">
-                    Deconnexion
+                    {{ __('Deconnexion') }}
                 </button>
             </form>
         </div>
 
         <dl class="mt-8 grid gap-4 md:grid-cols-3">
             <div class="rounded-lg bg-slate-50 p-4">
-                <dt class="text-sm text-slate-500">Email</dt>
+                <dt class="text-sm text-slate-500">{{ __('Email') }}</dt>
                 <dd class="mt-1 font-medium">{{ auth()->user()->email }}</dd>
             </div>
             <div class="rounded-lg bg-slate-50 p-4">
-                <dt class="text-sm text-slate-500">Role</dt>
-                <dd class="mt-1 font-medium">{{ auth()->user()->role }}</dd>
+                <dt class="text-sm text-slate-500">{{ __('Role') }}</dt>
+                <dd class="mt-1 font-medium">{{ __('Patient') }}</dd>
             </div>
-            <div class="rounded-lg bg-slate-50 p-4">
-                <dt class="text-sm text-slate-500">Acces</dt>
-                <dd class="mt-1 font-medium">Routes patient uniquement</dd>
-            </div>
+            
         </dl>
 
         <div class="mt-8">
             <a href="{{ route('appointments.index') }}" class="inline-flex rounded-md bg-sky-700 px-4 py-2 text-sm font-medium text-white hover:bg-sky-600">
-                Gerer mes rendez-vous
+                {{ __('Gerer mes rendez-vous') }}
             </a>
         </div>
     </section>

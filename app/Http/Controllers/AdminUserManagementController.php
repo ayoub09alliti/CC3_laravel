@@ -21,7 +21,7 @@ class AdminUserManagementController extends Controller
         return view('admin.users.index', [
             'users' => $users,
             'role' => $role,
-            'pageTitle' => $role === User::ROLE_PATIENT ? 'Gestion des patients' : 'Gestion des medecins',
+            'pageTitle' => $role === User::ROLE_PATIENT ? __('Gestion des patients') : __('Gestion des medecins'),
         ]);
     }
 
@@ -42,7 +42,7 @@ class AdminUserManagementController extends Controller
 
         return redirect()
             ->route('admin.users.index', $role)
-            ->with('success', $role === User::ROLE_PATIENT ? 'Patient cree avec succes.' : 'Medecin cree avec succes.');
+            ->with('success', $role === User::ROLE_PATIENT ? __('Patient cree avec succes.') : __('Medecin cree avec succes.'));
     }
 
     public function update(Request $request, string $role, User $user)
@@ -68,7 +68,7 @@ class AdminUserManagementController extends Controller
 
         return redirect()
             ->route('admin.users.index', $role)
-            ->with('success', $role === User::ROLE_PATIENT ? 'Patient mis a jour avec succes.' : 'Medecin mis a jour avec succes.');
+            ->with('success', $role === User::ROLE_PATIENT ? __('Patient mis a jour avec succes.') : __('Medecin mis a jour avec succes.'));
     }
 
     public function destroy(string $role, User $user)
@@ -80,7 +80,7 @@ class AdminUserManagementController extends Controller
 
         return redirect()
             ->route('admin.users.index', $role)
-            ->with('success', $role === User::ROLE_PATIENT ? 'Patient supprime avec succes.' : 'Medecin supprime avec succes.');
+            ->with('success', $role === User::ROLE_PATIENT ? __('Patient supprime avec succes.') : __('Medecin supprime avec succes.'));
     }
 
     protected function validateUser(Request $request, string $role, ?User $user = null): array

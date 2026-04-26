@@ -25,7 +25,7 @@ class AuthController extends Controller
 
         if (! Auth::attempt($credentials, $remember)) {
             return back()
-                ->withErrors(['email' => 'Identifiants invalides.'])
+                ->withErrors(['email' => __('Identifiants invalides.')])
                 ->onlyInput('email');
         }
 
@@ -66,6 +66,6 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('login');
+        return redirect()->route('home');
     }
 }
