@@ -10,9 +10,7 @@
             </div>
 
             <div class="flex flex-wrap gap-3">
-                <a href="{{ route('dashboard') }}" class="rounded-md border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">
-                    {{ __('Tableau de bord') }}
-                </a>
+            
                 <button type="button" class="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700" data-modal-open="create-appointment-modal">
                     {{ __('Nouveau rendez-vous') }}
                 </button>
@@ -113,6 +111,23 @@
                                 </td>
                                 <td class="px-4 py-3">
                                     <div class="flex flex-wrap gap-2">
+                                        @if (! auth()->user()->isPatient())
+                                            <button
+                                                type="button"
+                                                class="rounded-md border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50"
+                                                data-modal-open="edit-appointment-modal-{{ $appointment->id }}"
+                                            >
+                                                {{ __('Modifier') }}
+                                            </button>
+                                        @endif
+
+                                        <form method="POST" action="{{ route('appointments.destroy', $appointment) }}" onsubmit="return confirm('Confirmer cette action ?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="rounded-md border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50">
+                                                {{ __('Supprimer') }}
+                                            </button>
+                                        </form>
                                         @if (! auth()->user()->isPatient() && $appointment->status === 'pending')
                                             <form method="POST" action="{{ route('appointments.confirm', $appointment) }}">
                                                 @csrf
@@ -130,15 +145,7 @@
                                             </form>
                                         @endif
 
-                                        @if (! auth()->user()->isPatient())
-                                            <button
-                                                type="button"
-                                                class="rounded-md border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50"
-                                                data-modal-open="edit-appointment-modal-{{ $appointment->id }}"
-                                            >
-                                                {{ __('Modifier') }}
-                                            </button>
-                                        @endif
+                                        
 
                                         @if ($appointment->status !== 'cancelled')
                                             <form method="POST" action="{{ route('appointments.cancel', $appointment) }}">
@@ -158,13 +165,7 @@
                                             </form>
                                         @endif
 
-                                        <form method="POST" action="{{ route('appointments.destroy', $appointment) }}" onsubmit="return confirm('Confirmer cette action ?')">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="rounded-md border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50">
-                                                {{ __('Supprimer') }}
-                                            </button>
-                                        </form>
+                                        
                                     </div>
                                 </td>
                             </tr>

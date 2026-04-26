@@ -16,9 +16,7 @@
             </div>
 
             <div class="flex flex-wrap gap-3">
-                <a href="{{ route('admin.dashboard') }}" class="rounded-md border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">
-                    {{ __('Tableau de bord admin') }}
-                </a>
+               
                 <a href="{{ route('admin.users.index', \App\Models\User::ROLE_PATIENT) }}" class="rounded-md px-4 py-2 text-sm font-medium {{ $isDoctor ? 'border border-slate-300 text-slate-700 hover:bg-slate-50' : 'bg-sky-700 text-white hover:bg-sky-600' }}">
                     {{ __('Patients') }}
                 </a>
