@@ -137,13 +137,13 @@
                                         @endif
 
                                         @if (auth()->user()->isAdmin())
-                                            <form method="POST" action="{{ route('appointments.destroy', $appointment) }}" onsubmit="return confirm('{{ __('Confirmer la suppression de ce rendez-vous ?') }}')">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="rounded-md border border-rose-200 px-3 py-1.5 text-xs font-medium text-rose-700 hover:bg-rose-50">
-                                                    {{ __('Supprimer') }}
-                                                </button>
-                                            </form>
+                                            <button
+                                                type="button"
+                                                class="rounded-md border border-rose-200 px-3 py-1.5 text-xs font-medium text-rose-700 hover:bg-rose-50"
+                                                data-modal-open="delete-appointment-modal-{{ $appointment->id }}"
+                                            >
+                                                {{ __('Supprimer') }}
+                                            </button>
                                         @endif
                                         @if (! auth()->user()->isPatient() && $appointment->status === 'pending')
                                             <form method="POST" action="{{ route('appointments.confirm', $appointment) }}">
@@ -222,6 +222,13 @@
                 'action' => route('appointments.update', $appointment),
                 'method' => 'PUT',
                 'appointment' => $appointment,
+            ])
+
+            @include('components.ui.confirm-delete-modal', [
+                'modalId' => 'delete-appointment-modal-' . $appointment->id,
+                'title' => __('Supprimer :resource', ['resource' => __('Rendez-vous')]),
+                'message' => __('Confirmer la suppression de ce rendez-vous ?'),
+                'action' => route('appointments.destroy', $appointment),
             ])
         @endforeach
 

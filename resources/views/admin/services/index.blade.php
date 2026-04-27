@@ -102,13 +102,13 @@
                                         >
                                             {{ __('Modifier') }}
                                         </button>
-                                        <form method="POST" action="{{ route('admin.services.destroy', $service) }}" onsubmit="return confirm('{{ __('Etes-vous sur de vouloir supprimer ce service ?') }}');">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="rounded-md border border-rose-200 px-3 py-1.5 text-xs font-medium text-rose-700 hover:bg-rose-50">
-                                                {{ __('Supprimer') }}
-                                            </button>
-                                        </form>
+                                        <button
+                                            type="button"
+                                            class="rounded-md border border-rose-200 px-3 py-1.5 text-xs font-medium text-rose-700 hover:bg-rose-50"
+                                            data-modal-open="delete-service-modal-{{ $service->id }}"
+                                        >
+                                            {{ __('Supprimer') }}
+                                        </button>
                                     </div>
                                 </td>
                             </tr>
@@ -151,6 +151,13 @@
             'method' => 'PUT',
             'submitLabel' => __('Mettre a jour'),
             'serviceModel' => $service,
+        ])
+
+        @include('components.ui.confirm-delete-modal', [
+            'modalId' => 'delete-service-modal-' . $service->id,
+            'title' => __('Supprimer :resource', ['resource' => __('service')]),
+            'message' => __('Etes-vous sur de vouloir supprimer ce service ?'),
+            'action' => route('admin.services.destroy', $service),
         ])
     @endforeach
 
