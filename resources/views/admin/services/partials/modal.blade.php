@@ -23,10 +23,7 @@
                     <input id="{{ $modalId }}-name" name="name" type="text" value="{{ old('modal_target') === $modalId ? old('name') : $serviceModel?->name }}" required class="w-full rounded-md border border-slate-300 px-3 py-2 focus:border-sky-500 focus:outline-none">
                 </div>
 
-                <div>
-                    <label class="mb-1 block text-sm font-medium text-slate-700" for="{{ $modalId }}-name_ar">{{ __('Nom du service (AR)') }}</label>
-                    <input id="{{ $modalId }}-name_ar" name="name_ar" type="text" value="{{ old('modal_target') === $modalId ? old('name_ar') : $serviceModel?->name_ar }}" class="w-full rounded-md border border-slate-300 px-3 py-2 focus:border-sky-500 focus:outline-none" placeholder="اسم الخدمة">
-                </div>
+                
 
                 <div>
                     <label class="mb-1 block text-sm font-medium text-slate-700" for="{{ $modalId }}-duration">{{ __('Duree (minutes)') }} *</label>
@@ -34,12 +31,12 @@
                 </div>
 
                 <div>
-                    <label class="mb-1 block text-sm font-medium text-slate-700" for="{{ $modalId }}-price">{{ __('Prix (DA)') }} *</label>
+                    <label class="mb-1 block text-sm font-medium text-slate-700" for="{{ $modalId }}-price">{{ __('Prix (Dh)') }} *</label>
                     <input id="{{ $modalId }}-price" name="price" type="number" min="0" step="0.01" max="999999.99" value="{{ old('modal_target') === $modalId ? old('price') : ($serviceModel?->price ?? '0.00') }}" required class="w-full rounded-md border border-slate-300 px-3 py-2 focus:border-sky-500 focus:outline-none">
                 </div>
 
                 <div>
-                    <label class="mb-1 block text-sm font-medium text-slate-700" for="{{ $modalId }}-color">{{ __('Couleur (HEX)') }} *</label>
+                    <label class="mb-1 block text-sm font-medium text-slate-700" for="{{ $modalId }}-color">{{ __('Couleur ') }} *</label>
                     <div class="flex gap-2">
                         <input id="{{ $modalId }}-color" name="color" type="text" value="{{ old('modal_target') === $modalId ? old('color') : ($serviceModel?->color ?? '#3B82F6') }}" required class="w-full rounded-md border border-slate-300 px-3 py-2 focus:border-sky-500 focus:outline-none" placeholder="#3B82F6">
                         <span class="inline-flex items-center rounded-md border border-slate-300 px-2" data-color-preview style="background-color: {{ old('modal_target') === $modalId ? old('color') : ($serviceModel?->color ?? '#3B82F6') }};">

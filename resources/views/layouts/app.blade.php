@@ -7,6 +7,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}" >
+    
     <title>{{ $title ?? config('app.name', 'Laravel') }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
@@ -15,7 +17,9 @@
         <header class="border-b border-slate-200 bg-white/95 backdrop-blur">
             <div class="mx-auto flex w-full max-w-7xl items-center justify-between gap-4 px-6 py-4">
                 <a href="{{ route('home') }}" class="flex items-center gap-3">
-                    <span class="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-sky-700 text-sm font-semibold text-white">MC</span>
+                    <span class="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-sky-700 text-sm font-semibold text-white">
+                        <img src="{{ asset('images/logo.png') }}" alt="Logo médical" style="width:120px;">
+                    </span>
                     <span>
                         <span class="block text-sm font-semibold text-slate-900">{{ __('MediCab') }}</span>
                         <span class="block text-xs text-slate-500">{{ __('Gestion medicale intelligente') }}</span>

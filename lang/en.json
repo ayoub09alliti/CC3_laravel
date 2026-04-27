@@ -185,5 +185,8 @@
     "Confirmer la suppression de ce rendez-vous ?": "Confirm deletion of this appointment?",
     "Creer un rendez-vous": "Create an appointment",
     "Modifier un rendez-vous": "Edit an appointment",
-    "Gestion des Rendez-vous": "Appointment Management"
+    "Gerer les rendez-vous": "Manage Appointment",
+    "Gestion des Patients": "Patient Management",
+    "Gestion des Medecins": "Doctor Management",
+    "Gestion des Services": "Service Management"
 }

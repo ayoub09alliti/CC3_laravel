@@ -20,10 +20,7 @@
                 <dt class="text-sm text-slate-500">{{ __('Role') }}</dt>
                 <dd class="mt-1 font-medium">{{ __('Admin') }}</dd>
             </div>
-            <div class="rounded-lg bg-slate-50 p-4">
-                <dt class="text-sm text-slate-500">{{ __('Espace') }}</dt>
-                <dd class="mt-1 font-medium">{{ __('Administration generale') }}</dd>
-            </div>
+            
         </dl>
 
         <div class="mt-8">
