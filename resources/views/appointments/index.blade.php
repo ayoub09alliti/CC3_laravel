@@ -5,15 +5,30 @@
         <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div>
                 <p class="text-sm font-medium uppercase tracking-wide text-sky-700">{{ __('Gestion') }}</p>
-                <h1 class="mt-1 text-3xl font-semibold">{{ __('Rendez-vous') }}</h1>
-                <p class="mt-2 text-sm text-slate-600">{{ __('Liste, creation, modification et annulation des rendez-vous.') }}</p>
+                <h1 class="mt-1 text-3xl font-semibold">{{ __('Gestion des Rendez-vous') }}</h1>
             </div>
 
             <div class="flex flex-wrap gap-3">
-            
-                <button type="button" class="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700" data-modal-open="create-appointment-modal">
-                    {{ __('Nouveau rendez-vous') }}
-                </button>
+                @if (auth()->user()->isAdmin())
+                    <a href="{{ route('appointments.index') }}" class="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700">
+                        {{ __('Rendez-vous') }}
+                    </a>
+                    
+                    <a href="{{ route('admin.users.index', \App\Models\User::ROLE_DOCTOR) }}" class="rounded-md border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">
+                        {{ __('Medecins') }}
+                    </a>
+                    <a href="{{ route('admin.users.index', \App\Models\User::ROLE_PATIENT) }}" class="rounded-md border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">
+                        {{ __('Patients') }}
+                    </a>
+                    <a href="{{ route('admin.services.index') }}" class="rounded-md border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">
+                        {{ __('Services') }}
+                    </a>
+                @endif
+                @if (! auth()->user()->isDoctor())
+                    <button type="button" class="rounded-md bg-rose-700 px-4 py-2 text-sm font-medium text-white hover:bg-rose-600" data-modal-open="create-appointment-modal">
+                        {{ __('Nouveau rendez-vous') }}
+                    </button>
+                @endif
             </div>
         </div>
 
@@ -111,7 +126,7 @@
                                 </td>
                                 <td class="px-4 py-3">
                                     <div class="flex flex-wrap gap-2">
-                                        @if (! auth()->user()->isPatient())
+                                         @if (auth()->user()->isAdmin())
                                             <button
                                                 type="button"
                                                 class="rounded-md border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50"
@@ -121,13 +136,15 @@
                                             </button>
                                         @endif
 
-                                        <form method="POST" action="{{ route('appointments.destroy', $appointment) }}" onsubmit="return confirm('Confirmer cette action ?')">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="rounded-md border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50">
-                                                {{ __('Supprimer') }}
-                                            </button>
-                                        </form>
+                                        @if (auth()->user()->isAdmin())
+                                            <form method="POST" action="{{ route('appointments.destroy', $appointment) }}" onsubmit="return confirm('{{ __('Confirmer la suppression de ce rendez-vous ?') }}')">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="rounded-md border border-rose-200 px-3 py-1.5 text-xs font-medium text-rose-700 hover:bg-rose-50">
+                                                    {{ __('Supprimer') }}
+                                                </button>
+                                            </form>
+                                        @endif
                                         @if (! auth()->user()->isPatient() && $appointment->status === 'pending')
                                             <form method="POST" action="{{ route('appointments.confirm', $appointment) }}">
                                                 @csrf
@@ -144,8 +161,6 @@
                                                 </button>
                                             </form>
                                         @endif
-
-                                        
 
                                         @if ($appointment->status !== 'cancelled')
                                             <form method="POST" action="{{ route('appointments.cancel', $appointment) }}">
@@ -165,7 +180,7 @@
                                             </form>
                                         @endif
 
-                                        
+                                       
                                     </div>
                                 </td>
                             </tr>
@@ -186,16 +201,18 @@
         </div>
     </section>
 
-    @include('appointments.partials.modal', [
-        'modalId' => 'create-appointment-modal',
-        'eyebrow' => __('Creation'),
-        'title' => __('Nouveau rendez-vous'),
-        'description' => __('Renseignez les informations du rendez-vous puis enregistrez.'),
-        'action' => route('appointments.store'),
-        'method' => 'POST',
-    ])
+    @if (! auth()->user()->isDoctor())
+        @include('appointments.partials.modal', [
+            'modalId' => 'create-appointment-modal',
+            'eyebrow' => __('Creation'),
+            'title' => __('Nouveau rendez-vous'),
+            'description' => __('Renseignez les informations du rendez-vous puis enregistrez.'),
+            'action' => route('appointments.store'),
+            'method' => 'POST',
+        ])
+    @endif
 
-    @if (! auth()->user()->isPatient())
+    @if (auth()->user()->isAdmin())
         @foreach ($appointments as $appointment)
             @include('appointments.partials.modal', [
                 'modalId' => 'edit-appointment-modal-' . $appointment->id,

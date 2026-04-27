@@ -12,16 +12,20 @@
             <div>
                 <p class="text-sm font-medium uppercase tracking-wide text-slate-500">{{ __('Administration') }}</p>
                 <h1 class="mt-1 text-3xl font-semibold">{{ $pageTitle }}</h1>
-                <p class="mt-2 text-sm text-slate-600">{{ __('Creation, modification et suppression des :resource depuis l espace admin.', ['resource' => $resourceLabelPlural]) }}</p>
             </div>
 
             <div class="flex flex-wrap gap-3">
-               
-                <a href="{{ route('admin.users.index', \App\Models\User::ROLE_PATIENT) }}" class="rounded-md px-4 py-2 text-sm font-medium {{ $isDoctor ? 'border border-slate-300 text-slate-700 hover:bg-slate-50' : 'bg-sky-700 text-white hover:bg-sky-600' }}">
-                    {{ __('Patients') }}
+                <a href="{{ route('appointments.index') }}" class="rounded-md border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">
+                    {{ __('Rendez-vous') }}
                 </a>
                 <a href="{{ route('admin.users.index', \App\Models\User::ROLE_DOCTOR) }}" class="rounded-md px-4 py-2 text-sm font-medium {{ $isDoctor ? 'bg-emerald-700 text-white hover:bg-emerald-600' : 'border border-slate-300 text-slate-700 hover:bg-slate-50' }}">
                     {{ __('Medecins') }}
+                </a>
+                <a href="{{ route('admin.users.index', \App\Models\User::ROLE_PATIENT) }}" class="rounded-md px-4 py-2 text-sm font-medium {{ $isDoctor ? 'border border-slate-300 text-slate-700 hover:bg-slate-50' : 'bg-sky-700 text-white hover:bg-sky-600' }}">
+                    {{ __('Patients') }}
+                </a>
+                <a href="{{ route('admin.services.index') }}" class="rounded-md border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">
+                    {{ __('Services') }}
                 </a>
                 <button type="button" class="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700" data-modal-open="create-user-modal">
                     {{ __('Nouveau :resource', ['resource' => $resourceLabel]) }}

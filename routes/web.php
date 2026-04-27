@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminUserManagementController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ServiceController;
 use App\Http\Middleware\SetLocale;
 use Illuminate\Support\Facades\Route;
 
@@ -47,5 +48,9 @@ Route::middleware('auth')->group(function () {
         Route::post('/admin/users/{role}', [AdminUserManagementController::class, 'store'])->name('admin.users.store');
         Route::put('/admin/users/{role}/{user}', [AdminUserManagementController::class, 'update'])->name('admin.users.update');
         Route::delete('/admin/users/{role}/{user}', [AdminUserManagementController::class, 'destroy'])->name('admin.users.destroy');
+        Route::get('/admin/services', [ServiceController::class, 'index'])->name('admin.services.index');
+        Route::post('/admin/services', [ServiceController::class, 'store'])->name('admin.services.store');
+        Route::put('/admin/services/{service}', [ServiceController::class, 'update'])->name('admin.services.update');
+        Route::delete('/admin/services/{service}', [ServiceController::class, 'destroy'])->name('admin.services.destroy');
     });
 });

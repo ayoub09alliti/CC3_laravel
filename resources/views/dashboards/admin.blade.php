@@ -8,12 +8,7 @@
                 <h1 class="mt-2 text-3xl font-semibold">{{ __('Bienvenue :name', ['name' => auth()->user()->name]) }}</h1>
             </div>
 
-            <form method="POST" action="{{ route('logout') }}">
-                @csrf
-                <button type="submit" class="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700">
-                    {{ __('Deconnexion') }}
-                </button>
-            </form>
+            
         </div>
 
         <dl class="mt-8 grid gap-4 md:grid-cols-3">
@@ -25,7 +20,10 @@
                 <dt class="text-sm text-slate-500">{{ __('Role') }}</dt>
                 <dd class="mt-1 font-medium">{{ __('Admin') }}</dd>
             </div>
-            
+            <div class="rounded-lg bg-slate-50 p-4">
+                <dt class="text-sm text-slate-500">{{ __('Espace') }}</dt>
+                <dd class="mt-1 font-medium">{{ __('Administration generale') }}</dd>
+            </div>
         </dl>
 
         <div class="mt-8">
@@ -38,6 +36,9 @@
                 </a>
                 <a href="{{ route('admin.users.index', \App\Models\User::ROLE_DOCTOR) }}" class="inline-flex rounded-md bg-emerald-700 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-600">
                     {{ __('Gerer les medecins') }}
+                </a>
+                <a href="{{ route('admin.services.index') }}" class="inline-flex rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700">
+                    {{ __('Gerer les services') }}
                 </a>
             </div>
         </div>

@@ -9,12 +9,7 @@
 
             </div>
 
-            <form method="POST" action="{{ route('logout') }}">
-                @csrf
-                <button type="submit" class="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700">
-                    {{ __('Deconnexion') }}
-                </button>
-            </form>
+            
         </div>
 
         <dl class="mt-8 grid gap-4 md:grid-cols-3">

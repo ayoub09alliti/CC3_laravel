@@ -72,7 +72,7 @@ class AppointmentController extends Controller
 
         $editingAppointment = null;
 
-        if ($request->string('modal')->value() === 'edit' && $request->filled('appointment') && ! $user->isPatient()) {
+        if ($request->string('modal')->value() === 'edit' && $request->filled('appointment') && $user->isAdmin()) {
             $editingAppointment = Appointment::with(['patient', 'doctor', 'service'])
                 ->findOrFail($request->integer('appointment'));
 
@@ -91,12 +91,16 @@ class AppointmentController extends Controller
 
     public function create()
     {
+        abort_if(Auth::user()->isDoctor(), 403);
+
         return redirect()->route('appointments.index', ['modal' => 'create']);
     }
 
     public function store(Request $request)
     {
         $user = Auth::user();
+        abort_if($user->isDoctor(), 403);
+
         $validated = $this->validateAppointment($request, $user);
 
         Appointment::create([
@@ -117,7 +121,7 @@ class AppointmentController extends Controller
     public function edit(Appointment $appointment)
     {
         $this->ensureUserCanAccess($appointment);
-        abort_if(Auth::user()->isPatient(), 403);
+        abort_if(! Auth::user()->isAdmin(), 403);
 
         return redirect()->route('appointments.index', [
             'modal' => 'edit',
@@ -130,7 +134,7 @@ class AppointmentController extends Controller
         $this->ensureUserCanAccess($appointment);
 
         $user = Auth::user();
-        abort_if($user->isPatient(), 403);
+        abort_if(! $user->isAdmin(), 403);
 
         $validated = $this->validateAppointment($request, $user, $appointment);
         $newStatus = $this->resolveStatus($validated, $user, $appointment);
@@ -163,13 +167,7 @@ class AppointmentController extends Controller
     {
         $this->ensureUserCanAccess($appointment);
 
-        if (! Auth::user()->isAdmin()) {
-            $appointment->update(['status' => 'cancelled']);
-
-            return redirect()
-                ->route('appointments.index')
-                ->with('success', __('Le rendez-vous a ete annule.'));
-        }
+        abort_if(! Auth::user()->isAdmin(), 403);
 
         $appointment->delete();
 
